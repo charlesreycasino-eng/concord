@@ -1,0 +1,21 @@
+# Pings Supabase every 5 days so a free project is never paused for 1 week of inactivity.
+name: Supabase keep-alive
+on:
+  schedule:
+    - cron: '0 2 */5 * *'
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call ping() on Supabase
+        env:
+          SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://dtrzgqjebruogynexbsp.supabase.co' }}
+          SUPABASE_KEY: ${{ vars.VITE_SUPABASE_KEY || 'sb_publishable_nN9ly_xF-qEVeoSnuDuaPQ_s2DuvZOY' }}
+        run: |
+          curl -sS --fail-with-body -X POST "$SUPABASE_URL/rest/v1/rpc/ping" \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{}'
+          echo
+          echo "Supabase ping OK"
